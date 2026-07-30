@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<!-- Google AdSense -->
+	<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7006553430164318"
+     crossorigin="anonymous"></script>
+    
+    <!-- Título y SEO Local/AEO -->
+    <title>Mapa Oficial de las 41 Guisanderas de Asturias | Guía Gastronómica</title>
+    <meta name="description" content="Mapa interactivo completo con las 41 cocineras del Club de Guisanderas de Asturias. Localiza sus restaurantes, direcciones exactas y abre la ruta en Google Maps en 1 clic.">
+    <meta name="keywords" content="club de guisanderas, guisanderas asturias, restaurantes asturias, fabada asturiana, donde comer asturias, cocina tradicional">
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+
+    <!-- Open Graph (Redes y WhatsApp) -->
+    <meta property="og:locale" content="es_ES">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Mapa Completo de las 41 Guisanderas de Asturias">
+    <meta property="og:description" content="Descubre dónde comer la cocina tradicional asturiana auténtica con la ubicación de todas las Guisanderas del Club.">
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+
+    <style>
+        :root {
+            --primary-color: #8b0000;
+            --accent-color: #28a745;
+            --accent-hover: #218838;
+            --bg-light: #f8f9fa;
+            --text-dark: #2c3e50;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            text-align: center;
+            padding: 25px 15px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+
+        header h1 { margin: 0; font-size: 1.8rem; }
+        header p { margin: 5px 0 0 0; font-size: 1rem; opacity: 0.9; }
+
+        main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px 15px;
+        }
+
+        #map-container {
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            margin-bottom: 30px;
+        }
+
+        #map { width: 100%; height: 580px; }
+
+        .popup-content h3 { margin: 0 0 4px 0; color: var(--primary-color); font-size: 1.1rem; }
+        .popup-content p { margin: 3px 0; font-size: 0.85rem; color: #444; }
+
+        .btn-ir {
+            display: inline-block;
+            margin-top: 8px;
+            padding: 6px 14px;
+            background-color: var(--accent-color);
+            color: white !important;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 0.85rem;
+            text-align: center;
+        }
+        .btn-ir:hover { background-color: var(--accent-hover); }
+
+        .seo-aeo-container {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+        }
+
+        .seo-aeo-container h2 { color: var(--primary-color); border-bottom: 2px solid #f0f0f0; padding-bottom: 8px; }
+
+        .grid-restaurantes {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .card-restaurante {
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            padding: 12px;
+            background-color: #fff;
+        }
+
+        .card-restaurante h4 { margin: 0 0 5px 0; color: var(--primary-color); }
+        .card-restaurante p { margin: 2px 0; font-size: 0.85rem; }
+
+        details.faq-item {
+            background: #f1f3f5;
+            margin-bottom: 10px;
+            padding: 12px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        footer { text-align: center; padding: 20px; background: #222; color: #aaa; font-size: 0.85rem; }
+    </style>
+
+    <!-- Datos Estructurados Schema.org (AEO & SEO) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Organization",
+          "name": "Club de Guisanderas de Asturias",
+          "url": "https://clubdeguisanderas.com/?page_id=61",
+          "description": "Asociación de más de 40 cocineras guardianas de la cocina tradicional asturiana."
+        },
+        {
+          "@type": "FAQPage",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "¿Cuántas Guisanderas forman el Club de Guisanderas de Asturias?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Actualmente el Club de Guisanderas de Asturias está formado por 41 cocineras reconocidas que defienden el recetario tradicional asturiano en sus propios establecimientos."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "¿Cómo ir a los restaurantes con el mapa interactivo?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Haz clic sobre el icono de cualquier restaurante en el mapa de Asturias y pulsa la opción 'IR'. Se abrirá Google Maps indicando el restaurante como destino final para que inicies tu ruta."
+              }
+            }
+          ]
+        }
+      ]
+    }
+    </script>
+</head>
+<body>
+
+    <header>
+        <h1>Mapa del Club de Guisanderas de Asturias</h1>
+        <p>Listado completo de las 41 cocineras y sus restaurantes tradicionales</p>
+    </header>
+
+    <main>
+        <!-- Mapa Interactivo Leaflet -->
+        <section id="map-container">
+            <div id="map"></div>
+        </section>
+
+        <!-- Bloque SEO y AEO -->
+        <section class="seo-aeo-container">
+            <h2>Mapa Gastronómico: Las 41 Guisanderas de Asturias</h2>
+            <p>
+                El <strong>Club de Guisanderas de Asturias</strong> agrupa a 41 mujeres herederas del arte de la cocina a fuego lento. Este directorio interactivo abarca desde los valles mineros y de interior hasta los principales puertos marineros del Cantábrico.
+            </p>
+
+            <h3>Preguntas Frecuentes (Respuestas Directas AEO)</h3>
+            
+            <details class="faq-item">
+                <summary>¿Qué requisitos tiene que cumplir una Guisandera?</summary>
+                <p>Ser propietaria de su restaurante, contar con más de 10 años al frente de sus fogones elaborando cocina asturiana tradicional, tener un padrino/madrina de prestigio y superar la votación del resto de miembros del club.</p>
+            </details>
+
+            <details class="faq-item">
+                <summary>¿En qué zonas de Asturias están ubicadas?</summary>
+                <p>Están repartidas por toda Asturias: Oviedo, Gijón, Avilés, Lastres, Cangas del Narcea, Llanes, Luarca, Candamo, Tineo, Cabrales, Somiedo, Navia, Villaviciosa, Castrillón y Allande.</p>
+            </details>
+
+            <h3 style="margin-top: 25px;">Directorio Completo de Guisanderas</h3>
+            <div class="grid-restaurantes" id="directorio-html">
+                <!-- Se poblará vía script de forma limpia y semántica -->
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Mapa Gastronómico - Datos basados en el Club de Guisanderas de Asturias.</p>
+    </footer>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Inicializar mapa en Asturias
+            var map = L.map('map').setView([43.36, -5.85], 9);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '© OpenStreetMap'
+            }).addTo(map);
+
+            // Base de datos de las 41 Guisanderas
+            var guisanderasData = [
+                { g: "Amada Álvarez Pico", r: "Casa Amada", d: "C/ San Bernabé 4, Oviedo", lat: 43.3642, lng: -5.8481 },
+                { g: "Teresa Camacho", r: "Casa Camacho", d: "Anleo s/n, Navia", lat: 43.5325, lng: -6.7028 },
+                { g: "Celia Nieves Uzal Álvarez", r: "La Allandesa", d: "Av. de Galicia 36, Pola de Allande", lat: 43.2721, lng: -6.6115 },
+                { g: "Mª Busta Rosales", r: "Casa Eutimio", d: "C/ San Antonio 3, Lastres", lat: 43.5132, lng: -5.2694 },
+                { g: "Mª Joaquina Rodríguez", r: "Casa Chema", d: "La Madredana 30, Puerto (Oviedo)", lat: 43.3321, lng: -5.9284 },
+                { g: "Primi Escandón Forcelledo", r: "La Palmera", d: "C/ San Roque 4, Tazones", lat: 43.5441, lng: -5.3986 },
+                { g: "Mª Teresa González Alonso", r: "El Rozao", d: "Meré, Llanes", lat: 43.3912, lng: -4.8911 },
+                { g: "Pili Ramos Rodríguez", r: "Los Cañuzos", d: "Pillarno s/n, Castrillón", lat: 43.5312, lng: -5.9961 },
+                { g: "Joaquina Estrella Paradelo", r: "Casa Ferruelo", d: "Cilleros s/n, Cangas del Narcea", lat: 43.1756, lng: -6.5489 },
+                { g: "Annalisa Lusso", r: "Casa Lusso", d: "C/ Mayor s/n, Luarca", lat: 43.5421, lng: -6.5352 },
+                { g: "Leni Gutiérrez Díaz", r: "Casa Pilar", d: "C/ Mayor s/n, Nueva de Llanes", lat: 43.4383, lng: -4.9392 },
+                { g: "Lola Sánchez Hernández", r: "Restaurante Yumay", d: "C/ Rafael Alberti 10, Villalegre (Avilés)", lat: 43.5381, lng: -5.9083 },
+                { g: "Mª José Miranda Carvajal", r: "Casa Reposo", d: "Pandiello s/n, Cabrales", lat: 43.3186, lng: -4.8912 },
+                { g: "Rosalía Arruquero García", r: "Casa Consuelo", d: "Otur, Luarca", lat: 43.5458, lng: -6.5823 },
+                { g: "Maruja González Suárez", r: "El Llar de Viri", d: "San Román de Candamo", lat: 43.4722, lng: -6.0736 },
+                { g: "Aurora González Velasco", r: "Casa Maravilla", d: "C/ Marqués de Pidal 12, Oviedo", lat: 43.3631, lng: -5.8512 },
+                { g: "Ana Fe Fernández Areces", r: "El Llar de La Catedral", d: "Plaza de la Catedral 5, Oviedo", lat: 43.3625, lng: -5.8447 },
+                { g: "Paloma Alonso Arribas", r: "La Pondala", d: "C/ Baja de San Lorenzo 1, Somió (Gijón)", lat: 43.5375, lng: -5.6281 },
+                { g: "Lydia Vázquez Lago", r: "El Tenedor", d: "C/ Santa Susana 8, Oviedo", lat: 43.3601, lng: -5.8495 },
+                { g: "Beatriz Fernández Gutiérrez", r: "El Rincón de Beatriz", d: "C/ Melquiades Álvarez 3, Oviedo", lat: 43.3638, lng: -5.8472 },
+                { g: "Mª del Carmen del Riego", r: "Casa Belarmino", d: "Manzaneda 21, Luanco (Gozón)", lat: 43.5872, lng: -5.8113 },
+                { g: "Ramona Menéndez Cuervo", r: "Casa Belarmino", d: "Manzaneda 21, Luanco (Gozón)", lat: 43.5872, lng: -5.8113 },
+                { g: "Noelia García Valle", r: "Los Cañuzos", d: "Pillarno s/n, Castrillón", lat: 43.5312, lng: -5.9961 },
+                { g: "Viri Fernández García", r: "El Llar de Viri", d: "San Román de Candamo", lat: 43.4722, lng: -6.0736 },
+                { g: "Aida Rosales Cambiella", r: "Casa Rosales", d: "C/ Argüelles 12, Arriondas", lat: 43.3852, lng: -5.1842 },
+                { g: "Rosa Mª del Fueyo Argüelles", r: "El Crucero", d: "El Crucero s/n, Tineo", lat: 43.3325, lng: -6.4112 },
+                { g: "Gloria Paradelo Ferruelo", r: "Casa Ferruelo", d: "Cilleros s/n, Cangas del Narcea", lat: 43.1756, lng: -6.5489 },
+                { g: "Maite Fernández García", r: "El Llar de Viri", d: "San Román de Candamo", lat: 43.4722, lng: -6.0736 },
+                { g: "Isabel Alonso Morís", r: "Casa Morán", d: "Argüero, Villaviciosa", lat: 43.5331, lng: -5.4522 },
+                { g: "Ángela Pérez García", r: "Casa Emelia", d: "Cangas de Onís", lat: 43.3511, lng: -5.1278 },
+                { g: "Yvonne Corral Valbuena", r: "Casa Consuelo", d: "Otur, Luarca", lat: 43.5458, lng: -6.5823 },
+                { g: "Mª Teresa Alonso Arribas", r: "La Pondala", d: "Somió, Gijón", lat: 43.5375, lng: -5.6281 },
+                { g: "Blanca Menéndez Álvarez", r: "Casa Belarmino", d: "Manzaneda 21, Luanco", lat: 43.5872, lng: -5.8113 },
+                { g: "Mayte Álvarez Arias", r: "Casa Cristina", d: "Tellego 18, Ribera de Arriba", lat: 43.3142, lng: -5.8569 },
+                { g: "Mercedes Fernández", r: "Casa Mercedes", d: "C/ San Francisco 12, Oviedo", lat: 43.3619, lng: -5.8455 },
+                { g: "Herminia Nuevo", r: "Casa Herminia", d: "La Pereda, Tineo", lat: 43.3411, lng: -6.4211 },
+                { g: "Sara López Corral", r: "Casa Consuelo", d: "Otur, Luarca", lat: 43.5458, lng: -6.5823 },
+                { g: "María Fernández López", r: "El Llar de La Catedral", d: "Plaza de la Catedral 5, Oviedo", lat: 43.3625, lng: -5.8447 },
+                { g: "María Fernández Méndez", r: "Casa María", d: "Puerto de Vega, Navia", lat: 43.5621, lng: -6.6431 },
+                { g: "Carmen Carbajales", r: "Casa Carmen", d: "C/ Uría 22, Cangas del Narcea", lat: 43.1762, lng: -6.5492 },
+                { g: "Mª Argentina Peláez", r: "Casa Argentina", d: "Pola de Somiedo", lat: 43.0911, lng: -6.2541 }
+            ];
+
+            var contenedorHTML = document.getElementById('directorio-html');
+
+            // Renderizado dinámico en mapa y en HTML
+            guisanderasData.forEach(function(item) {
+                var gMapUrl = "https://www.google.com/maps/dir/?api=1&destination=" + encodeURIComponent(item.r + ", " + item.d + ", Asturias");
+
+                // Popup Mapa
+                var popupHtml = `
+                    <div class="popup-content">
+                        <h3>${item.r}</h3>
+                        <p><strong>Guisandera:</strong> ${item.g}</p>
+                        <p><strong>Dirección:</strong> ${item.d}</p>
+                        <a href="${gMapUrl}" target="_blank" rel="noopener" class="btn-ir">IR</a>
+                    </div>
+                `;
+                L.marker([item.lat, item.lng]).addTo(map).bindPopup(popupHtml);
+
+                // Tarjeta HTML indexable (SEO)
+                var card = document.createElement('article');
+                card.className = 'card-restaurante';
+                card.innerHTML = `
+                    <h4>${item.r}</h4>
+                    <p><strong>Guisandera:</strong> ${item.g}</p>
+                    <p><strong>Ubicación:</strong> ${item.d}</p>
+                `;
+                contenedorHTML.appendChild(card);
+            });
+        });
+    </script>
+</body>
+</html>
