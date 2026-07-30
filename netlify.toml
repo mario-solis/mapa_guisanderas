@@ -1,0 +1,35 @@
+[build]
+  publish = "."
+
+# Cabeceras de seguridad y caché
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "geolocation=(), camera=(), microphone=()"
+
+# index.html: sin caché (siempre la versión más reciente)
+[[headers]]
+  for = "/index.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+# Archivos estáticos: caché de 1 hora
+[[headers]]
+  for = "/*.xml"
+  [headers.values]
+    Cache-Control = "public, max-age=3600"
+
+[[headers]]
+  for = "/*.txt"
+  [headers.values]
+    Cache-Control = "public, max-age=3600"
+
+# Redirección de www → sin www (dominio canónico)
+[[redirects]]
+  from = "https://www.mapaguisanderas.es/*"
+  to   = "https://mapaguisanderas.es/:splat"
+  status = 301
+  force  = true
