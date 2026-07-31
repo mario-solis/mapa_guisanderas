@@ -147,7 +147,7 @@
       padding: 0;
     }
     .leaflet-popup-content {
-      margin: 14px 16px;
+      margin: 20px 22px;
       min-width: 230px;
     }
     .popup-title {
@@ -497,9 +497,6 @@ restaurantes.forEach(r => {
   const destQuery  = encodeURIComponent(r.restaurante + ', ' + r.direccion + ', Asturias');
   const mapsUrl    = `https://www.google.com/maps/dir/?api=1&destination=${destQuery}`;
 
-  // Reserva en TheFork (ElTenedor) — reemplaza con tu URL de afiliado Awin/TheFork
-  const theforkUrl = `https://www.thefork.es/buscar?searchQuery=${encodeURIComponent(r.restaurante + ' Asturias')}`;
-
   const popup = `
     <div>
       <div class="popup-title">${r.restaurante}</div>
@@ -517,7 +514,6 @@ restaurantes.forEach(r => {
       </div>
       <div class="popup-actions">
         <a href="${mapsUrl}" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Cómo llegar</a>
-        <a href="${theforkUrl}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">Reservar mesa</a>
       </div>
     </div>`;
 
